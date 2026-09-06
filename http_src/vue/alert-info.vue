@@ -1,11 +1,12 @@
 <template>
 <div style="width:100%" v-if="show_alert == true" class="alert alert-dismissable" :class="alert_type">
-  <span v-html="body"></span>
+  <span v-html="sanitizeHtml(body)"></span>
 <button v-if="!no_close_button" type="button" @click="close" class="btn-close"  aria-label="Close"></button>
 </div>
 </template>
 
 <script>
+import DOMPurify from 'dompurify';
 import { defineComponent } from 'vue';
 export default defineComponent({
     components: {
@@ -42,6 +43,14 @@ export default defineComponent({
 	}
     },
     methods: {
+	sanitizeHtml(html) {
+	    return html
+		? DOMPurify.sanitize(html, {
+		      ALLOWED_TAGS: ['span', 'p'],
+		      ALLOWED_ATTR: ['class'],
+		  })
+		: '';
+	},
 	close: function() {
 	    this.show_alert = false;
 	},
